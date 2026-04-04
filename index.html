@@ -241,32 +241,21 @@
       <div class="game-score">Score : <span id="game5-score">0</span></div>
     </div>
     <div class="game-container">
-      <!-- Level selection -->
-      <div id="game5-levels" class="game5-levels">
-        <h2 class="game-title">🔢 Presque Doubles !</h2>
-        <p class="game-instruction">Choisis ton niveau</p>
-        <div class="level-cards">
-          <div class="game-card game-card-green" onclick="game5Start('guided')">
-            <div class="game-card-emoji">🐣</div>
-            <h2>Avec aide</h2>
-            <p>Je te montre comment faire</p>
-          </div>
-          <div class="game-card game-card-orange" onclick="game5Start('semi')">
-            <div class="game-card-emoji">🦊</div>
-            <h2>Un peu d'aide</h2>
-            <p>Trouve le double et le résultat</p>
-          </div>
-          <div class="game-card game-card-purple" onclick="game5Start('independent')">
-            <div class="game-card-emoji">🦅</div>
-            <h2>Tout seul !</h2>
-            <p>À toi de jouer sans aide</p>
-          </div>
-        </div>
+      <!-- Discovery intro (first time only) -->
+      <div id="game5-intro" class="game5-intro hidden">
+        <div id="game5-intro-content"></div>
       </div>
 
       <!-- Play area -->
       <div id="game5-play" class="game5-play hidden">
         <h2 class="game-title" id="game5-level-title">🔢 Presque Doubles !</h2>
+
+        <!-- Step progress dots -->
+        <div id="game5-step-bar" class="step-bar">
+          <span id="game5-step-label" class="step-label"></span>
+          <div id="game5-step-dots" class="step-dots"></div>
+        </div>
+
         <p class="game-instruction" id="game5-instruction">Regarde bien !</p>
 
         <!-- Cubes visualization -->
@@ -278,7 +267,7 @@
         <!-- Tree decomposition area -->
         <div id="game5-decomp-area"></div>
 
-        <!-- Answer input area -->
+        <!-- Answer input area (MC buttons or typed input) -->
         <div id="game5-input-area" style="margin: 16px auto; text-align: center;"></div>
 
         <button class="btn btn-big btn-green" onclick="game5Submit()" id="game5-validate">
@@ -290,6 +279,14 @@
         <button id="game5-next" class="btn btn-big btn-green hidden" onclick="game5Next()">
           Suivant →
         </button>
+      </div>
+
+      <!-- Step advancement celebration -->
+      <div id="game5-advance" class="game5-advance hidden">
+        <div class="advance-content">
+          <div class="advance-emoji">⭐</div>
+          <h2 id="game5-advance-text" class="advance-text">Bravo ! Niveau suivant !</h2>
+        </div>
       </div>
     </div>
   </div>

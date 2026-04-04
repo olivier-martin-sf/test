@@ -814,8 +814,164 @@ h1, h2, h3 {
 }
 
 /* ==================== GAME 5: PRESQUE DOUBLES ==================== */
-.game5-levels, .game5-play {
+.game5-intro, .game5-play, .game5-advance {
   width: 100%;
+}
+
+/* Discovery intro */
+.game5-intro {
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.intro-step {
+  animation: fadeIn 0.4s ease;
+}
+
+.intro-double-label {
+  font-family: 'Baloo 2', cursive;
+  font-size: 28px;
+  color: var(--color-green);
+  margin: 12px 0 8px;
+}
+
+.intro-reveal {
+  text-align: center;
+  padding: 40px 20px;
+  animation: bounceIn 0.6s ease;
+}
+
+.intro-reveal-emoji {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: stickerReveal 0.8s ease;
+}
+
+.intro-reveal-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(24px, 5vw, 36px);
+  color: var(--color-green);
+  margin-bottom: 12px;
+}
+
+.intro-reveal-text {
+  font-size: 20px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* Step progress bar */
+.step-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.step-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.step-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.step-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--color-green-light);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.step-dot.done {
+  background: var(--color-green);
+  border-color: var(--color-green);
+  animation: cubeAppear 0.3s ease;
+}
+
+.step-dot.current {
+  border-color: var(--color-green);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+/* Step advance celebration */
+.game5-advance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.advance-content {
+  text-align: center;
+  animation: bounceIn 0.6s ease;
+}
+
+.advance-emoji {
+  font-size: 80px;
+  margin-bottom: 16px;
+  animation: stickerReveal 0.8s ease;
+}
+
+.advance-text {
+  font-family: 'Baloo 2', cursive;
+  font-size: 32px;
+  color: var(--color-green);
+}
+
+/* MC choices for Game 5 — larger touch targets */
+.game5-mc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  max-width: 420px;
+  margin: 16px auto;
+}
+
+.game5-mc-grid .choice-card {
+  font-size: 32px;
+  padding: 20px 16px;
+  min-height: 64px;
+  border-radius: 20px;
+}
+
+.game5-mc-grid .choice-card.correct {
+  background: var(--color-green-light);
+  border-color: var(--color-green);
+  animation: bounceIn 0.4s ease;
+}
+
+.game5-mc-grid .choice-card.wrong {
+  background: var(--color-orange-light);
+  border-color: var(--color-orange);
+  animation: shake 0.4s ease;
+}
+
+/* MC choices for identify_double — wider cards */
+.game5-mc-grid.mc-double-id {
+  grid-template-columns: 1fr;
+  max-width: 300px;
+}
+
+.game5-mc-grid.mc-double-id .choice-card {
+  font-size: 28px;
+  padding: 16px;
+}
+
+/* Speed timer */
+.speed-timer {
+  font-family: 'Baloo 2', cursive;
+  font-size: 24px;
+  color: var(--text-light);
+  margin-bottom: 12px;
 }
 
 /* Cube display */
@@ -1233,5 +1389,23 @@ h1, h2, h3 {
   }
   .eq-result-big {
     font-size: 42px;
+  }
+  .game5-mc-grid .choice-card {
+    font-size: 26px;
+    padding: 16px 12px;
+    min-height: 56px;
+  }
+  .step-dot {
+    width: 12px;
+    height: 12px;
+  }
+  .intro-reveal-title {
+    font-size: 24px;
+  }
+  .advance-emoji {
+    font-size: 60px;
+  }
+  .advance-text {
+    font-size: 24px;
   }
 }
