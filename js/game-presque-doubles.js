@@ -92,12 +92,10 @@ var Game5 = (function() {
     if (cubeArea) { cubeArea.innerHTML = ''; cubeArea.classList.remove('hidden'); }
     if (decompArea) { decompArea.innerHTML = ''; decompArea.classList.add('hidden'); }
 
-    // Build cubes for both numbers (same count = double)
     if (cubeArea) {
       cubeArea.innerHTML = renderCubeArea(num, num, false);
     }
 
-    // Equation
     if (eqArea) {
       eqArea.innerHTML =
         '<span class="eq-num eq-blue">' + num + '</span>' +
@@ -106,7 +104,6 @@ var Game5 = (function() {
         '<span class="eq-op">=</span>';
     }
 
-    // Single input
     if (inputArea) {
       inputArea.innerHTML =
         '<input id="game5-answer" class="answer-input" type="number" min="0" max="40" placeholder="?">';
@@ -114,7 +111,6 @@ var Game5 = (function() {
       if (inp) setTimeout(function() { inp.focus(); }, 150);
     }
 
-    // Instruction
     var instrEl = document.getElementById('game5-instruction');
     if (instrEl) instrEl.textContent = 'Calcule le double ! (' + (4 - warmupLeft) + '/3)';
   }
@@ -132,7 +128,7 @@ var Game5 = (function() {
 
     if (instrEl) instrEl.textContent = 'Regarde bien la décomposition, puis donne le résultat !';
 
-    // Step 1: Show cubes + equation
+    // Step 1: Show cubes unseparated + equation with ?
     if (cubeArea) {
       cubeArea.classList.remove('hidden');
       cubeArea.innerHTML = renderCubeArea(currentPair.a, currentPair.b, false);
@@ -144,7 +140,7 @@ var Game5 = (function() {
         '<span class="eq-op">+</span>' +
         '<span class="eq-num eq-blue">' + currentPair.b + '</span>' +
         '<span class="eq-op">=</span>' +
-        '<span class="eq-num eq-placeholder">?</span>';
+        '<span class="eq-num eq-placeholder eq-pulse">?</span>';
     }
 
     if (decompArea) {
@@ -154,28 +150,27 @@ var Game5 = (function() {
 
     if (inputArea) { inputArea.innerHTML = ''; }
 
-    // Step 2: After 1.2s — show tree decomposition
+    // Step 2: After 1.5s — separate cubes + show tree decomposition
     animTimers.push(setTimeout(function() {
-      if (decompArea) {
-        decompArea.innerHTML = renderTreeDecomp(big, small);
-      }
-      // Animate cube separation
+      // Re-render cubes with separation (orange cube on correct side)
       if (cubeArea) {
         cubeArea.innerHTML = renderCubeArea(currentPair.a, currentPair.b, true);
       }
-    }, 1200));
+      // Show tree decomposition with staged animation
+      if (decompArea) {
+        decompArea.innerHTML = renderTreeDecomp(big, small);
+      }
+    }, 1500));
 
-    // Step 3: After 2.8s — show red rectangle + double result
+    // Step 3: After 3.5s — highlight doubles + show equation result
     animTimers.push(setTimeout(function() {
-      // Add red rectangle to cube area
-      var cubeRect = cubeArea ? cubeArea.querySelector('.cube-group-left') : null;
-      var cubeRect2 = cubeArea ? cubeArea.querySelector('.cube-group-right-main') : null;
-      if (cubeRect) cubeRect.classList.add('cube-highlighted');
-      if (cubeRect2) cubeRect2.classList.add('cube-highlighted');
+      highlightDoubles();
 
-      // Add highlight to decomp
-      var decompDouble = decompArea ? decompArea.querySelector('.tree-left') : null;
-      if (decompDouble) decompDouble.classList.add('tree-highlighted');
+      // Highlight the matching number in tree decomposition
+      if (decompArea) {
+        var treeLeft = decompArea.querySelector('.tree-left');
+        if (treeLeft) treeLeft.classList.add('tree-highlighted');
+      }
 
       // Update equation with double result
       if (eqArea) {
@@ -185,22 +180,22 @@ var Game5 = (function() {
           '<span class="eq-op">+</span>' +
           '<span class="eq-num eq-blue">' + currentPair.b + '</span>' +
           '<span class="eq-op">=</span>' +
-          '<span class="eq-num eq-blue eq-fade-in">' + doubleResult + '</span>' +
+          '<span class="eq-num eq-blue eq-number-reveal">' + doubleResult + '</span>' +
           '<span class="eq-op eq-fade-in">+</span>' +
-          '<span class="eq-num eq-orange eq-fade-in">1</span>' +
-          '<span class="eq-op eq-fade-in">=</span>';
+          '<span class="eq-num eq-orange eq-number-reveal" style="animation-delay:0.15s">' + 1 + '</span>' +
+          '<span class="eq-op eq-fade-in" style="animation-delay:0.25s">=</span>';
       }
-    }, 2800));
+    }, 3500));
 
-    // Step 4: After 4s — show answer input
+    // Step 4: After 5s — show answer input
     animTimers.push(setTimeout(function() {
       if (inputArea) {
         inputArea.innerHTML =
-          '<input id="game5-answer" class="answer-input" type="number" min="0" max="40" placeholder="?">';
+          '<input id="game5-answer" class="answer-input answer-appear" type="number" min="0" max="40" placeholder="?">';
         var inp = document.getElementById('game5-answer');
         if (inp) setTimeout(function() { inp.focus(); }, 100);
       }
-    }, 4000));
+    }, 5000));
   }
 
   // ─── Level 2: Semi-guided ───
@@ -237,7 +232,7 @@ var Game5 = (function() {
         '<span class="eq-op">=</span>';
     }
 
-    // Show two inputs: double result + final answer
+    // Show two inputs
     if (inputArea) {
       inputArea.innerHTML =
         '<div class="semi-inputs">' +
@@ -253,7 +248,6 @@ var Game5 = (function() {
       var doubleInp = document.getElementById('game5-double');
       if (doubleInp) setTimeout(function() { doubleInp.focus(); }, 150);
 
-      // Auto-advance from first to second input on Enter
       if (doubleInp) {
         doubleInp.addEventListener('keydown', function(e) {
           if (e.key === 'Enter') {
@@ -276,13 +270,11 @@ var Game5 = (function() {
 
     if (instrEl) instrEl.textContent = 'À toi de jouer !';
 
-    // Show cubes without separation (child must recognize the near-double)
     if (cubeArea) {
       cubeArea.classList.remove('hidden');
       cubeArea.innerHTML = renderCubeArea(currentPair.a, currentPair.b, false);
     }
 
-    // Simple equation
     if (eqArea) {
       eqArea.innerHTML =
         '<span class="eq-num eq-blue">' + currentPair.a + '</span>' +
@@ -291,10 +283,8 @@ var Game5 = (function() {
         '<span class="eq-op">=</span>';
     }
 
-    // Hide decomposition
     if (decompArea) { decompArea.innerHTML = ''; decompArea.classList.add('hidden'); }
 
-    // Single input
     if (inputArea) {
       inputArea.innerHTML =
         '<input id="game5-answer" class="answer-input" type="number" min="0" max="40" placeholder="?">';
@@ -313,7 +303,6 @@ var Game5 = (function() {
     var correct = false;
 
     if (currentPair && currentPair.isWarmup) {
-      // Warmup: pure double
       var inp = document.getElementById('game5-answer');
       if (!inp || inp.value.trim() === '') return;
       answered = true;
@@ -336,7 +325,6 @@ var Game5 = (function() {
         }
       }
     } else if (currentLevel === 'semi') {
-      // Two inputs
       var doubleInp = document.getElementById('game5-double');
       var finalInp = document.getElementById('game5-final');
       if (!doubleInp || !finalInp) return;
@@ -359,7 +347,6 @@ var Game5 = (function() {
       finalInp.className = 'answer-input answer-input-small ' + (finalCorrect ? 'correct' : 'wrong');
 
       if (correct) {
-        // Show red rectangle highlight on cubes
         highlightDoubles();
         if (feedbackEl) {
           feedbackEl.className = 'feedback correct';
@@ -372,7 +359,6 @@ var Game5 = (function() {
         }
       }
     } else {
-      // Guided or independent: single input
       var inp2 = document.getElementById('game5-answer');
       if (!inp2 || inp2.value.trim() === '') return;
       answered = true;
@@ -394,7 +380,6 @@ var Game5 = (function() {
           feedbackEl.className = 'feedback wrong';
           feedbackEl.textContent = currentPair.a + ' + ' + currentPair.b + ' = ' + currentPair.small + ' + ' + currentPair.small + ' + 1 = ' + (currentPair.small * 2) + ' + 1 = ' + expected2 + ' !';
         }
-        // Independent: show full animation as reminder
         if (currentLevel === 'independent') {
           showReminderAnimation();
         }
@@ -419,10 +404,10 @@ var Game5 = (function() {
   function highlightDoubles() {
     var cubeArea = document.getElementById('game5-cube-area');
     if (cubeArea) {
-      var left = cubeArea.querySelector('.cube-group-left');
-      var rightMain = cubeArea.querySelector('.cube-group-right-main');
-      if (left) left.classList.add('cube-highlighted');
-      if (rightMain) rightMain.classList.add('cube-highlighted');
+      var mainGroup = cubeArea.querySelector('.cube-group-main');
+      var matchGroup = cubeArea.querySelector('.cube-group-match');
+      if (mainGroup) mainGroup.classList.add('cube-highlighted');
+      if (matchGroup) matchGroup.classList.add('cube-highlighted');
     }
   }
 
@@ -431,19 +416,16 @@ var Game5 = (function() {
     var cubeArea = document.getElementById('game5-cube-area');
     var eqArea = document.getElementById('game5-equation-area');
 
-    // Show decomposition tree
     if (decompArea) {
       decompArea.classList.remove('hidden');
       decompArea.innerHTML = '<p class="reminder-label">Regarde bien !</p>' +
         renderTreeDecomp(currentPair.big, currentPair.small);
     }
 
-    // Separate cubes
     if (cubeArea) {
       cubeArea.innerHTML = renderCubeArea(currentPair.a, currentPair.b, true);
     }
 
-    // Update equation
     animTimers.push(setTimeout(function() {
       highlightDoubles();
       var doubleResult = currentPair.small * 2;
@@ -454,41 +436,62 @@ var Game5 = (function() {
           '<span class="eq-op">+</span>' +
           '<span class="eq-num eq-blue">' + currentPair.b + '</span>' +
           '<span class="eq-op">=</span>' +
-          '<span class="eq-num eq-blue eq-fade-in">' + doubleResult + '</span>' +
+          '<span class="eq-num eq-blue eq-number-reveal">' + doubleResult + '</span>' +
           '<span class="eq-op eq-fade-in">+</span>' +
-          '<span class="eq-num eq-orange eq-fade-in">1</span>' +
-          '<span class="eq-op eq-fade-in">=</span>' +
-          '<span class="eq-num eq-green eq-fade-in">' + finalResult + '</span>';
+          '<span class="eq-num eq-orange eq-number-reveal" style="animation-delay:0.15s">1</span>' +
+          '<span class="eq-op eq-fade-in" style="animation-delay:0.25s">=</span>' +
+          '<span class="eq-num eq-green eq-number-reveal eq-result-big" style="animation-delay:0.4s">' + finalResult + '</span>';
       }
-    }, 800));
+    }, 1000));
   }
 
   // ─── Cube rendering ───
+  // Renders two cube groups with a + sign between them.
+  // When separated=true, the BIGGER number's side gets decomposed:
+  // its cubes split into (small blue cubes) + (1 orange extra cube)
   function renderCubeArea(a, b, separated) {
     var small = Math.min(a, b);
     var big = Math.max(a, b);
     var isNearDouble = (big === small + 1);
+    var bigIsLeft = (a > b);
 
     var html = '<div class="cube-display">';
 
-    // Left group (first number displayed)
-    html += '<div class="cube-group cube-group-left">';
-    html += renderCubeGrid(a, 'blue');
-    html += '</div>';
-
-    html += '<span class="cube-op">+</span>';
-
     if (isNearDouble && separated) {
-      // Right: show small cubes + 1 extra separated
-      html += '<div class="cube-group cube-group-right-main">';
-      html += renderCubeGrid(small, 'blue');
-      html += '</div>';
-      html += '<div class="cube-group cube-group-extra cube-separate-anim">';
-      html += '<div class="cube cube-orange"></div>';
-      html += '</div>';
+      if (bigIsLeft) {
+        // Left side is bigger: decompose left into small + extra
+        html += '<div class="cube-group cube-group-main">';
+        html += renderCubeGrid(small, 'blue');
+        html += '</div>';
+        html += '<div class="cube-group cube-group-extra cube-extra-pop">';
+        html += '<div class="cube cube-orange cube-pop-anim"></div>';
+        html += '</div>';
+        html += '<span class="cube-op">+</span>';
+        // Right side is the smaller number (matches the double)
+        html += '<div class="cube-group cube-group-match">';
+        html += renderCubeGrid(b, 'blue');
+        html += '</div>';
+      } else {
+        // Right side is bigger: decompose right into small + extra
+        // Left side is the smaller number (matches the double)
+        html += '<div class="cube-group cube-group-match">';
+        html += renderCubeGrid(a, 'blue');
+        html += '</div>';
+        html += '<span class="cube-op">+</span>';
+        html += '<div class="cube-group cube-group-main">';
+        html += renderCubeGrid(small, 'blue');
+        html += '</div>';
+        html += '<div class="cube-group cube-group-extra cube-extra-pop">';
+        html += '<div class="cube cube-orange cube-pop-anim"></div>';
+        html += '</div>';
+      }
     } else {
-      // Right: show all cubes together
-      html += '<div class="cube-group cube-group-right-main">';
+      // No separation: show both numbers as-is
+      html += '<div class="cube-group cube-group-match">';
+      html += renderCubeGrid(a, 'blue');
+      html += '</div>';
+      html += '<span class="cube-op">+</span>';
+      html += '<div class="cube-group cube-group-main">';
       html += renderCubeGrid(b, 'blue');
       html += '</div>';
     }
@@ -500,7 +503,7 @@ var Game5 = (function() {
   function renderCubeGrid(n, color) {
     var html = '<div class="cube-grid">';
     for (var i = 0; i < n; i++) {
-      html += '<div class="cube cube-' + color + '" style="animation-delay:' + (i * 0.05) + 's"></div>';
+      html += '<div class="cube cube-' + color + '" style="animation-delay:' + (i * 0.06) + 's"></div>';
     }
     html += '</div>';
     return html;
@@ -509,14 +512,14 @@ var Game5 = (function() {
   // ─── Tree decomposition rendering ───
   function renderTreeDecomp(big, small) {
     return '<div class="tree-decomp">' +
-      '<div class="tree-top">' +
+      '<div class="tree-top tree-anim-step1">' +
         '<span class="tree-number">' + big + '</span>' +
       '</div>' +
-      '<div class="tree-branches">' +
+      '<div class="tree-branches tree-anim-step2">' +
         '<div class="tree-branch-left"></div>' +
         '<div class="tree-branch-right"></div>' +
       '</div>' +
-      '<div class="tree-bottom">' +
+      '<div class="tree-bottom tree-anim-step3">' +
         '<span class="tree-child tree-left">' + small + '</span>' +
         '<span class="tree-child tree-right eq-orange">1</span>' +
       '</div>' +
@@ -546,12 +549,10 @@ var Game5 = (function() {
   // Enter key handling
   document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
-      // Only handle when game5 screen is active
       var screen = document.getElementById('screen-game5');
       if (!screen || !screen.classList.contains('active')) return;
 
       if (e.key === 'Enter') {
-        // Check if we're on the semi level with two inputs
         var finalInp = document.getElementById('game5-final');
         if (finalInp && document.activeElement === finalInp) {
           if (!answered) handleAnswer();
@@ -560,11 +561,9 @@ var Game5 = (function() {
         }
         var doubleInp = document.getElementById('game5-double');
         if (doubleInp && document.activeElement === doubleInp) {
-          // Move to final input instead of submitting
           if (finalInp) finalInp.focus();
           return;
         }
-        // Single input mode
         if (!answered) handleAnswer();
         else nextRound();
       }
